@@ -2,3 +2,4 @@ tools
 *.xz
 misc/build_manifest
 misc/firmware_keys
+.cache/
