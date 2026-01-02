@@ -254,10 +254,8 @@ if [ -s "$filenames" ]; then
 	fi
 		devicetree_file=$(echo $files_list | tr ' ' '\n' | grep DeviceTree."$product_model" | sed '/plist/d' | awk -F 'DeviceTree.' '{print $2}' | sed -n 1p)
 		devicetree_file='DeviceTree.'"$devicetree_file"
-		#ramdisk_file=$(echo $files_list | tr ' ' '\n' | grep .dmg$ | sed -n 1p) # after sorting scheme is: update --> root --> restore
-		#ramdisk_file=$(echo $files_list | tr ' ' '\n' | grep .dmg$ | sed -n 2p) # the update ramdisk should be always the second :-
-	if [ "$(echo $files_list | tr ' ' '\n' | grep .dmg$ | wc -l)" = "5" ]; then
-		ramdisk_file=$(echo $files_list | tr ' ' '\n' | grep .dmg$ | sed -n 3p)
+		# Parsing ramdisk files from BuildManifest.plist as it is more reliable
+		ramdisk_file=$(python3 -c "import plistlib; pl = plistlib.load(open('$build_manifest', 'rb')); print(pl['BuildIdentities'][0]['Manifest']['RestoreRamDisk']['Info']['Path'])"  | sed 's/"//g')
 	fi
 		trustcache_file="$ramdisk_file"'.trustcache'
 		return
